@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-  final String title;
+  //final String title;
 
-  ProductDetailsScreen(this.title);
+  //ProductDetailsScreen();
 
   static const routeName = '/product-detail';
 
@@ -12,7 +12,7 @@ class ProductDetailsScreen extends StatelessWidget {
     final productId = ModalRoute.of(context).settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text("Title"),
       ),
     );
   }
