@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import './product.dart';
 
@@ -51,8 +53,7 @@ class Products with ChangeNotifier {
   }
 
   Product findById(String id) {
-    return _items
-        .firstWhere((prod) => prod.id == id);
+    return _items.firstWhere((prod) => prod.id == id);
   }
 
   List<Product> get favoritesOnly {
@@ -64,12 +65,62 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void showAll(){
+  void showAll() {
     _showFavoriteOnly = false;
     notifyListeners();
   }
 
-  void addProducts() {
+  Future<void> fetchAndSetProduct() async {
+    const url =
+        'https://shop-app-5cc61-default-rtdb.firebaseio.com/products.json';
+    try {
+      final response = await http.get(url);
+      print(response);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> addProducts(Product product) async {
+    const url =
+        'https://shop-app-5cc61-default-rtdb.firebaseio.com/products.json';
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'price': product.price,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite,
+        }),
+      );
+      final newProduct = Product(
+        title: product.title,
+        price: product.price,
+        id: json.decode(response.body)['name'],
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+  }
+
+  void updateProducts(String id, Product newProduct) {
+    final productIndex = _items.indexWhere((prod) => prod.id == id);
+    if (productIndex >= 0) {
+      _items[productIndex] = newProduct;
+    } else {
+      print('....');
+    }
+    notifyListeners();
+  }
+
+  void deleteProducts(String id) {
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }

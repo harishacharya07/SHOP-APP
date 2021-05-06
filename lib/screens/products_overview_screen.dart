@@ -7,6 +7,7 @@ import '../widget/app_drawer.dart';
 import '../widget/badge.dart';
 import '../widget/products_grid.dart';
 import '../provider/cart.dart';
+import '../provider/products.dart';
 
 
 enum FiltersOptions {
@@ -21,6 +22,21 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showFavoritesOnly = false;
+  var _isInit = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<Products>(context).fetchAndSetProduct();
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
