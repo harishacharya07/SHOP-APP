@@ -20,20 +20,19 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
 
-    final url = 'https://shop-app-5cc61-default-rtdb.firebaseio.com/products/'
-        '$id.json';
+    final url = 'https://shop-app-5cc61-default-rtdb.firebaseio.com/favoriteUser/$userId.json?auth=$token';
 
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(
+          isFavorite,
+        ),
       );
       if (response.statusCode >= 400) {
         isFavorite = oldStatus;
