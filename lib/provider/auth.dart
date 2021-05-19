@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -46,7 +45,6 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
     _token = null;
     _expiryDate = null;
     _userId = null;
@@ -55,27 +53,26 @@ class Auth with ChangeNotifier {
       _authTimer = null;
     }
     notifyListeners();
-    prefs.clear();
   }
 
-  Future<bool> tryToLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return false;
-    }
-    final extractedData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
-    final expiryDate = DateTime.parse(extractedData['expiryDate']);
-
-    if (expiryDate.isBefore(DateTime.now())) {
-      return false;
-    }
-    _token = extractedData['token'];
-    _userId = extractedData['userId'];
-    notifyListeners();
-    _autoLogout();
-    return true;
-  }
+  // Future<bool> tryToLogin() async {
+  //   //final prefs = await SharedPreferences.getInstance();
+  //   if (!prefs.containsKey('userData')) {
+  //     return false;
+  //   }
+  //   // final extractedData =
+  //   //     json.decode(prefs.getString('userData')) as Map<String, Object>;
+  //   // final expiryDate = DateTime.parse(extractedData['expiryDate']);
+  //
+  //   if (expiryDate.isBefore(DateTime.now())) {
+  //     return false;
+  //   }
+  //   _token = extractedData['token'];
+  //   _userId = extractedData['userId'];
+  //   notifyListeners();
+  //   _autoLogout();
+  //   return true;
+  // }
 
   void _autoLogout() {
     if (_authTimer != null) {
@@ -114,7 +111,7 @@ class Auth with ChangeNotifier {
       );
       _autoLogout();
       notifyListeners();
-      final prefs = await SharedPreferences.getInstance();
+      //final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
           'token': _token,
@@ -122,7 +119,7 @@ class Auth with ChangeNotifier {
           'expiryDate': _expiryDate.toIso8601String(),
         },
       );
-      prefs.setString('userData', userData);
+     // prefs.setString('userData', userData);
     } catch (error) {
       throw error;
     }
